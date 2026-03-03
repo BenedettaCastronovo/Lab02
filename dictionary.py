@@ -32,12 +32,16 @@ class Dictionary:
     def translate(self, alien_word):
         alien_word = alien_word.lower()
         return self.words.get(alien_word, None)
+
     def translateWordWildCard(self, pattern):
         pattern = pattern.lower()
+        if pattern.count("?")>1:
+            print("è ammesso un solo ?")
+            return []
         ris = []
 
         for word in self.words:
-            if fnmatch.fnmatch(word, pattern):
+            if len(word)==len(pattern) and fnmatch.fnmatch(word, pattern):
                 ris.append(word)
 
         return ris

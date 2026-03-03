@@ -1,3 +1,5 @@
+from idlelib.pyparse import trans
+
 import dictionary as d
 import fnmatch
 
@@ -31,11 +33,15 @@ class Translator:
     def handleAdd(self, entry):
         # entry is a tuple <parola_aliena> <traduzione1 traduzione2 ...>
         try:
-            alien, translation = entry.split()
-            self.dictionary.addWord(alien, translation)
+            parts = entry.split(" ")
+            if len(parts) < 2:
+                raise ValueError
+            alien = parts[0]
+            translations = parts[1:]
+            self.dictionary.addWord(alien, translations)
             with open("dictionary.txt", "w") as f:
                 for k, v in self.dictionary.words.items():
-                    f.write(f"{k} {v}\n")
+                    f.write(f"{k} {' '.join(v)}\n")
         #return entry  ###
         except ValueError:
             print("Formato errato. Usa: parola traduzione")
@@ -47,7 +53,7 @@ class Translator:
         # query is a string <parola_aliena>
         result = self.dictionary.translate(query)
         if result:
-            print(f"La traduzione è: {result}")
+            print(f"La traduzione è: {', '.join(result)}")
         else:
             print("Parola non trovata")
 
@@ -55,6 +61,7 @@ class Translator:
         results = self.dictionary.translateWordWildCard(query)
         if results:
             for word in results:
-                print(f"{word} -> {self.dictionary.words[word]}")
+                trad = self.dictionary.words[word]
+                print(f"{word} -> {', '.join(trad)}")
         else:
             print("Nessuna parola trovata")
